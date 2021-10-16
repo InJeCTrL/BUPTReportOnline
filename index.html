@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="referrer" content="no-referrer" />
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<title>BUPTReportOnline</title>
+	</head>
+	<body>
+		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		<script>
+			var args = location.search;
+			if (args == null || args.length == 0) {
+				window.location.href = "./search.html";
+			} else {
+				$.ajax({
+					url: "https://buptreportonline.injectrl.xyz/api/User/AdminChk/" + args.substr(1),
+					type: "get",
+					crossDomain: true,
+					success: function(data) {
+						if (data["code"] != 0) {
+							window.location.href = "./search.html";
+						} else {
+							if (data["data"] === false) {
+								window.location.href = "./Normal.html?" + args.substr(1);
+							} else {
+								window.location.href = "./Admin.html?" + args.substr(1);
+							}
+						}
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						window.location.href = "./search.html";
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

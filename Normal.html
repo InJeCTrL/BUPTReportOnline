@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="referrer" content="no-referrer" />
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<title>配置页面</title>
+	</head>
+	<style>
+		* {
+			padding: 0;
+			margin: 0;
+		}
+
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			background-color: #F9F9FA;
+		}
+
+		.info-panel {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.item-block {
+			width: 80%;
+			height: 60vh;
+			padding: 10px;
+			margin: 10px;
+			border: azure;
+			border-radius: 15px 15px 15px 15px;
+			background-color: rgba(135, 255, 235, 0.5);
+			align-items: center;
+		}
+
+		.inner {
+			padding: 10px;
+		}
+
+		.inner-btn-block {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.btn {
+			width: 80%;
+			height: 6vh;
+			background-color: #ff865e;
+			border: #ff865e;
+			border-radius: 5px 5px 5px 5px;
+			color: white;
+			font-size: x-large;
+		}
+	</style>
+	<body>
+		<div class="info-panel">
+			<div class="item-block">
+				<div class="inner">
+					GUID:
+					<br />
+					<span id="GUID"></span>
+				</div>
+				<hr />
+				<div class="inner">
+					时间范围:
+					<span id="TimeRange"></span>
+				</div>
+				<hr />
+				<div class="inner">
+					邮箱:
+					<input type="text" id="EMail" style="width: 100%;" />
+				</div>
+				<div class="inner">
+					是否发送邮件通知:
+					<input type="checkbox" id="SendInform" />
+				</div>
+				<hr />
+				<div class="inner">
+					最近一次执行时间:
+					<br />
+					<span id="LastTime"></span>
+				</div>
+				<hr />
+				<div class="inner">
+					最近一次执行结果:
+					<br />
+					<span id="LastMessage"></span>
+				</div>
+				<hr />
+				<div class="inner inner-btn-block">
+					<button class="btn" id="update">修改</button>
+				</div>
+			</div>
+		</div>
+		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		<script>
+			function show(){
+				$.ajax({
+					url: "https://buptreportonline.injectrl.xyz/api/User/" + guid,
+					type: "get",
+					crossDomain: true,
+					success: function(data) {
+						if (data["code"] != 0) {
+							window.location.href = "https://cn.bing.com";
+						} else {
+							$("#GUID").text(data["data"]["guid"]);
+							$("#TimeRange").text(data["data"]["startHour"] + ":" + data["data"]["startMinute"] + " - " + data["data"]["endHour"] + ":" + data["data"]["endMinute"]);
+							$("#EMail").attr("value", data["data"]["email"]);
+							if (data["data"]["sendInform"] == true){
+								$("#SendInform").prop('checked', true);
+							}
+							$("#LastTime").text(data["data"]["lastTime"]);
+							$("#LastMessage").text(data["data"]["lastMessage"]);
+						}
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						window.location.href = "https://cn.bing.com/search";
+					}
+				});
+			}
+			var args = location.search;
+			if (args == null || args.length == 0) {
+				window.location.href = "./search.html";
+			} else {
+				var guid = args.substr(1);
+				$.ajax({
+					url: "https://buptreportonline.injectrl.xyz/api/User/RegChk/" + guid,
+					type: "get",
+					crossDomain: true,
+					success: function(data) {
+						if (data["code"] != 0) {
+							window.location.href = "./search.html";
+						} else {
+							if (data["data"] === false) {
+								window.location.href = "./Reg.html?" + guid;
+							} else {
+								show();
+							}
+						}
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						window.location.href = "./search.html";
+					}
+				});
+				$("#update").bind('click', function(){
+					var TargetGUID = guid;
+					var Email = $("#EMail").val();
+					var SendInform = $("#SendInform").prop('checked');
+					$.ajax({
+						url: "https://buptreportonline.injectrl.xyz/api/User/" + guid,
+						type: "put",
+						data: {TargetGUID: TargetGUID, Email: Email, SendInform: SendInform, IsAdmin: false},
+						crossDomain: true,
+						success: function(data) {
+							alert(data["message"]);
+						},
+						error: function(xhr, ajaxOptions, thrownError) {
+							alert("网络错误");
+						}
+					});
+				});
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="referrer" content="no-referrer" />
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<title>用户注册</title>
+	</head>
+	<style>
+		* {
+			padding: 0;
+			margin: 0;
+		}
+
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			background-color: #F9F9FA;
+		}
+
+		.info-panel {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.item-block {
+			width: 80%;
+			height: 70vh;
+			padding: 10px;
+			margin: 10px;
+			border: azure;
+			border-radius: 15px 15px 15px 15px;
+			background-color: rgba(135, 255, 235, 0.5);
+			align-items: center;
+		}
+
+		.inner {
+			padding: 10px;
+		}
+
+		.inner-btn-block {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.btn {
+			width: 80%;
+			height: 6vh;
+			background-color: #ff865e;
+			border: #ff865e;
+			border-radius: 5px 5px 5px 5px;
+			color: white;
+			font-size: x-large;
+		}
+	</style>
+	<body>
+		<div class="info-panel">
+			<div class="item-block">
+				<div class="inner">
+					开始小时:
+					<input type="number" id="StartHour" />
+				</div>
+				<hr />
+				<div class="inner">
+					开始分钟:
+					<input type="number" id="StartMinute" />
+				</div>
+				<hr />
+				<div class="inner">
+					结束小时:
+					<input type="number" id="EndHour" />
+				</div>
+				<hr />
+				<div class="inner">
+					结束分钟:
+					<input type="number" id="EndMinute" />`
+				</div>
+				<hr />
+				<div class="inner">
+					用户名:
+					<input type="text" id="username" />
+				</div>
+				<hr />
+				<div class="inner">
+					密码:
+					<input type="password" id="password" />
+				</div>
+				<hr />
+				<div class="inner">
+					Cookie:
+					<input type="text" id="cookie" />
+				</div>
+				<hr />
+				<div class="inner">
+					使用用户名&密码验证:
+					<input type="checkbox" id="usePWD" checked="checked" />
+				</div>
+				<hr />
+				<div class="inner">
+					邮箱:
+					<input type="text" id="EMail" style="width: 100%;" />
+				</div>
+				<div class="inner">
+					是否发送邮件通知:
+					<input type="checkbox" id="SendInform" />
+				</div>
+				<hr />
+				<div class="inner inner-btn-block">
+					<button class="btn" id="reg">注册</button>
+				</div>
+			</div>
+		</div>
+		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		<script>
+			var args = location.search;
+			if (args == null || args.length == 0) {
+				window.location.href = "./search.html";
+			} else {
+				var guid = args.substr(1);
+				$.ajax({
+					url: "https://buptreportonline.injectrl.xyz/api/User/RegChk/" + guid,
+					type: "get",
+					crossDomain: true,
+					success: function(data) {
+						if (data["code"] != 0) {
+							window.location.href = "./search.html";
+						} else if (data["data"] != false) {
+							window.location.href = "./?" + guid;
+						}
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						window.location.href = "./search.html";
+					}
+				});
+				$("#reg").bind('click', function() {
+					var StartHour = $("#StartHour").val();
+					var StartMinute = $("#StartMinute").val();
+					var EndHour = $("#EndHour").val();
+					var EndMinute = $("#EndMinute").val();
+					var UserName = $("#username").val();
+					var Password = $("#password").val();
+					var Cookie = $("#cookie").val();
+					var UsePWD = $("#usePWD").prop('checked');
+					var Email = $("#EMail").val();
+					var SendInform = $("#SendInform").prop('checked');
+					$.ajax({
+						url: "https://buptreportonline.injectrl.xyz/api/User/Reg",
+						type: "post",
+						data: {
+							TargetGUID: guid,
+							StartHour: StartHour,
+							StartMinute: StartMinute,
+							EndHour: EndHour,
+							EndMinute: EndMinute,
+							Email: Email,
+							SendInform: SendInform,
+							UserName: UserName,
+							Password: Password,
+							UsePWD: UsePWD,
+							Cookie: Cookie
+						},
+						crossDomain: true,
+						success: function(data) {
+							alert(data["message"]);
+							if (data["code"] === 0){
+								window.location.href = "./?" + guid;
+							}
+						},
+						error: function(xhr, ajaxOptions, thrownError) {
+							alert("网络错误");
+						}
+					});
+				});
+			}
+		</script>
+	</body>
+</html>
