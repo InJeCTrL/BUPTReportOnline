@@ -162,7 +162,7 @@ namespace BUPTReportOnline.Controllers
                 Email, SendInform, UserName, Password, UsePWD, Cookie);
             if (regResult.Success)
             {
-                JobManager.AddJob(new SaveJob(Startup.serviceScope, TargetGUID), t =>
+                JobManager.AddJob(new SaveJob(Startup.serviceProvider, TargetGUID), t =>
                 {
                     t.WithName(TargetGUID).ToRunEvery(1).Days().At(StartHour, StartMinute);
                 });

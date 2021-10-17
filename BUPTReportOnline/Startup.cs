@@ -17,7 +17,7 @@ namespace BUPTReportOnline
 {
     public class Startup
     {
-        public static IServiceScope serviceScope { get; set; }
+        public static IServiceProvider serviceProvider { get; set; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -75,20 +75,20 @@ namespace BUPTReportOnline
             {
                 endpoints.MapControllers();
             });
-            serviceScope = app.ApplicationServices.CreateScope();
+            serviceProvider = app.ApplicationServices;
             InitJobs();
         }
 
         private void InitJobs()
         {
-            var context = serviceScope.ServiceProvider.GetService<BROContext>();
+            var context = serviceProvider.CreateScope().ServiceProvider.GetService<BROContext>();
             context.Database.EnsureCreated();
             var users = context.User.Where(u => u.Registered).ToList();
             foreach (var user in users)
             {
                 if (user.GUID != "REMOVE_INIT")
                 {
-                    JobManager.AddJob(new SaveJob(serviceScope, user.GUID), t =>
+                    JobManager.AddJob(new SaveJob(serviceProvider, user.GUID), t =>
                     {
                         t.WithName(user.GUID).ToRunEvery(1).Days().At(user.StartHour, user.StartMinute);
                     });

@@ -114,7 +114,7 @@ namespace BUPTReportOnline.Utils
                 else
                 {
                     var content = innerResponse.Content.ReadAsStringAsync().Result;
-                    if (!content.Contains("hasFlag: '1'"))
+                    if (content.Contains("hasFlag: '1'"))
                     {
                         Tip = "今天已经填报了";
                         return true;
